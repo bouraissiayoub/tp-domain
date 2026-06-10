@@ -1,10 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { getAcceptedSlots } from "@/lib/firebase";
 
-const creneaux = [
+const creneauxBase = [
   { day: "Lundi 15 Juin", slots: ["9h00", "10h00", "11h00", "14h00", "15h00", "16h00"] },
   { day: "Mardi 16 Juin", slots: ["9h00", "10h00", "11h00", "14h00", "15h00", "16h00"] },
   { day: "Mercredi 17 Juin", slots: ["9h00", "10h00", "11h00"] },
@@ -30,6 +31,18 @@ export default function RendezVousPage() {
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [acceptedSlots, setAcceptedSlots] = useState<string[]>([]);
+
+  useEffect(() => {
+    getAcceptedSlots().then(setAcceptedSlots);
+  }, []);
+
+  const creneaux = creneauxBase.map((jour) => ({
+    ...jour,
+    slots: jour.slots.filter(
+      (slot) => !acceptedSlots.includes(`${jour.day} - ${slot}`)
+    ),
+  }));
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
