@@ -1,4 +1,8 @@
+"use client";
+
 import { Card } from "@/components/ui/card";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 const categories = ["Toutes", "Petit-déjeuner", "Déjeuner", "Dîner", "Snack"];
 
@@ -15,6 +19,12 @@ const recettes = [
 ];
 
 export default function RecettesPage() {
+  const [active, setActive] = useState("Toutes");
+
+  const filtered = active === "Toutes"
+    ? recettes
+    : recettes.filter((r) => r.category === active);
+
   return (
     <>
       <section className="bg-gradient-to-br from-primary/20 to-primary-dark/30 py-24">
@@ -36,14 +46,20 @@ export default function RecettesPage() {
             {categories.map((cat) => (
               <button
                 key={cat}
-                className="px-4 py-2 text-sm font-medium rounded-full border border-border text-text-muted hover:border-primary hover:text-primary transition-colors"
+                onClick={() => setActive(cat)}
+                className={cn(
+                  "px-4 py-2 text-sm font-medium rounded-full border transition-all",
+                  active === cat
+                    ? "bg-primary text-white border-primary shadow-sm"
+                    : "border-text-muted text-text-muted hover:border-primary hover:text-primary bg-white"
+                )}
               >
                 {cat}
               </button>
             ))}
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recettes.map((recette) => (
+            {filtered.map((recette) => (
               <Card key={recette.title} className="overflow-hidden p-0">
                 <div className="h-44 bg-primary-light/20 flex items-center justify-center">
                   <span className="text-primary/30 font-serif text-lg">Image</span>
